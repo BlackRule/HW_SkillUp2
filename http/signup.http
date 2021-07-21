@@ -1,0 +1,6 @@
+POST http://pomodoro.com:8000/auth/users/
+Content-Type: application/x-www-form-urlencoded
+
+username=adminhuman&password=human123pass
+
+

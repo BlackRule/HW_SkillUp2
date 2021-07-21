@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
+from rest_framework import viewsets, generics, renderers
 from rest_framework import permissions
-from pomodoro.serializers import UserSerializer, GroupSerializer
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from pomodoro.models import Todo
+from pomodoro.serializers import UserSerializer, GroupSerializer, TodoSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -20,3 +23,20 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class TodoSet(viewsets.ModelViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Todo.objects.filter(createdBy=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(createdBy=self.request.user)
+
+    @action(detail=False, methods=["delete"])
+    def all(self, request, *args, **kwargs):
+        deleted, rowsCount = Todo.objects.all().delete()
+        return Response(data={"rowsCount": rowsCount})

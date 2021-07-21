@@ -1,0 +1,47 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Index</title>
+    <script src="{% static 'js/common.js' %}" defer></script>
+    <script src="{% static 'js/index.js' %}" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+<header class="header">
+    <div class="header__logo">POMODORO Timer🍅</div>
+    <div class="header__user"></div>
+</header>
+<main class="main">
+    <div class="todo">
+        <div class="todo__title">
+            TO-DO
+        </div>
+        <div id="todo__list"></div>
+        <div class="buttons">
+            <button id="addTaskBtn">Add task</button>
+            <button>Delete all</button>
+        </div>
+    </div>
+    <div class="timer">
+        <div class="timer__currentPomodoro">work</div>
+        <div id="timer__time">25:00</div>
+        <div class="buttons">
+            <button>Start</button>
+            <button>Stop</button>
+        </div>
+        <div id="timer__options">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

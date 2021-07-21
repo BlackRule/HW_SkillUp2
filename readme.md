@@ -41,3 +41,10 @@ Deadline 24 июля
 Возможность удалить все дела за 1 нажатие
 Добавлять выполненный цикл Pomodoro
 Удалять выполненный цикл Pomodoro
+
+----
+python -m httpie -a admin:admin http://pomodoro.com:8000/rest/todos/
+План:
+Сделать связь Todo<-User +
+Выбирать только те Todo которые от этого user'а  +
+Сделать UI

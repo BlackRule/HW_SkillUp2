@@ -1,0 +1,65 @@
+html{
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: #5E7897;
+}
+
+.main{
+    padding-top: 46px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.header, .main {
+    max-width: 1146px;
+    margin: auto;
+}
+
+:root{
+    --dark-blue: #5482B8;
+    --grey:#CDD7E3;
+}
+
+.header, .todo, .timer {
+    background-color: white;
+}
+
+.header__logo{
+    font-size: 30px;
+    font-weight: 200;
+}
+
+.buttons {
+    display: flex;
+    font-size: 28px;
+}
+
+.buttons>:first-child{
+    background-color: var(--dark-blue);
+}
+.buttons>:last-child{
+    background-color: var(--grey);
+}
+
+.todo__title{
+    font-size: 50px;
+    text-align: center;
+}
+
+#todo__list>*{
+cursor: pointer;
+    background-color: var(--grey);
+    font-size: 35px;
+}
+
+.timer__options {
+    display: flex;
+}
+
+#timer__options > div > * {
+    display: block;
+}
