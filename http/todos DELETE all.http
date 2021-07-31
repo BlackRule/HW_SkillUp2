@@ -1,0 +1,2 @@
+GET http://pomodoro.com:8000/rest/todos/delete_all
+Authorization: Token {{auth_token}}

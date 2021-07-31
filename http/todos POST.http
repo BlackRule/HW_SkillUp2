@@ -1,5 +1,5 @@
 POST http://pomodoro.com:8000/rest/todos/
-Authorization: Token 9f51c771ebd4f4b46a00ad70a631f3ddc87cf728
+Authorization: Token {{auth_token}}
 Content-Type: application/x-www-form-urlencoded
 
 text=1

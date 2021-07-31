@@ -1,0 +1,2 @@
+POST http://pomodoro.com:8000/auth/token/logout/
+Authorization: Token {{auth_token}}

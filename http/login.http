@@ -1,6 +1,7 @@
 POST http://pomodoro.com:8000/auth/token/login/
 Content-Type: application/x-www-form-urlencoded
 
-username=adminhuman&password=human123pass
+username=abcuser&password=a0e0l0u0r0
 
 
+> {% client.global.set("auth_token", response.body.auth_token); %}

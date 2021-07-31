@@ -20,11 +20,14 @@ class TodoSerializer(serializers.Serializer):
     created = serializers.DateTimeField(required=False)
     createdBy = serializers.PrimaryKeyRelatedField(read_only=True)
     text = serializers.CharField()
+    done = serializers.BooleanField()
 
     def create(self, validated_data):
         return Todo.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.text = validated_data.get('text', instance.text)
+        instance.done = validated_data.get('done', instance.done)
         instance.save()
         return instance
+

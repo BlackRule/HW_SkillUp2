@@ -1,0 +1,7 @@
+*{
+    box-sizing: border-box;
+    display: block;
+}
+head{
+    display: none;
+}

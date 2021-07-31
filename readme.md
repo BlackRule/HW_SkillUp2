@@ -43,6 +43,9 @@ Deadline 24 июля
 Удалять выполненный цикл Pomodoro
 
 ----
+
+--
+
 python -m httpie -a admin:admin http://pomodoro.com:8000/rest/todos/
 План:
 Сделать связь Todo<-User +

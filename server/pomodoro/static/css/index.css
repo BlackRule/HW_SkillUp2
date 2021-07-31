@@ -1,3 +1,7 @@
+*{
+    box-sizing: border-box;
+}
+
 html{
     font-family: 'Roboto', sans-serif;
 }
@@ -12,6 +16,12 @@ body {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 28px;
 }
 
 .header, .main {
@@ -62,4 +72,21 @@ cursor: pointer;
 
 #timer__options > div > * {
     display: block;
+}
+
+
+
+.header__user {
+    display: flex;
+}
+@media(max-width: 425px){
+    #header__user {
+        position: absolute;
+        top:100%;
+        right:0;
+    }
+}
+
+#logout_btn{
+    cursor: pointer;
 }

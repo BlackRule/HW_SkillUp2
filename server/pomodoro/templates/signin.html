@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,59 +7,15 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sign in</title>
-    <script>
-    //Typedefs
-    /**
-    * @typedef {Object} SignInResponse
-    * @property {string} auth_token
-    */
-    </script>
-    <script defer>
-    "use strict";
-
-    function sendData(form) {
-        const data = new URLSearchParams();
-        for (const pair of new FormData(form)) {
-            data.append(pair[0], pair[1]);
-        }
-        localStorage.setItem("username", data.get("username"))
-        fetch('/auth/token/login/', {
-            method: 'post',
-            body: data,
-        })
-            .then((response) => {
-                if(!response.ok){
-                    console.log(response)
-                    response.json().then(
-                        (d) => {
-                            console.log(d)
-                        });
-                } else {
-                    response.json().then(
-                        /** @param d {SignInResponse}*/
-                        (d) => {
-                            localStorage.setItem("auth_token", d.auth_token)
-                        });
-                }
-            })
-            .catch((err) => {
-                console.log("ERROR: ");
-                console.log(err)
-
-            });
-    }
-
-    window.addEventListener("load", function () {
-        const form = document.getElementById("form");
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            sendData(e.target);
-        });
-    });
-    </script>
+        <link rel="stylesheet" href="{% static "/css/reset.css" %}">
+    <link rel="stylesheet" href="{% static "/css/forms.css" %}">
+    <link rel="stylesheet" href="{% static "/css/signin.css" %}">
+    <script src="{% static "/js/signin.js" %}" defer></script>
 </head>
 <body>
 <form action="" id="form">
+    <h1>Signin</h1>
+    <p>Don't have an account?<a href="/signup">Sign up instead</a></p>
     <label>
         Username:
         <input type="text" name="username">

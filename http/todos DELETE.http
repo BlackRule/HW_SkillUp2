@@ -1,0 +1,2 @@
+DELETE http://pomodoro.com:8000/rest/todos/all/
+Authorization: Token {{auth_token}}

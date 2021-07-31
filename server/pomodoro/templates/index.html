@@ -9,6 +9,7 @@
     <title>Index</title>
     <script src="{% static 'js/common.js' %}" defer></script>
     <script src="{% static 'js/index.js' %}" defer></script>
+    <link rel="stylesheet" href="{% static 'fonts/fa_all.min.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300&display=swap" rel="stylesheet">
@@ -17,7 +18,13 @@
 <body>
 <header class="header">
     <div class="header__logo">POMODORO Timer🍅</div>
-    <div class="header__user"></div>
+    <a class="header__user">
+        <div class="header__user__actions">
+            <div id="user__login"></div>
+            <div id="logout_btn">Logout</div>
+        </div>
+        <img src="{% static "/img/user.png" %}" alt="User">
+    </a>
 </header>
 <main class="main">
     <div class="todo">
@@ -27,7 +34,7 @@
         <div id="todo__list"></div>
         <div class="buttons">
             <button id="addTaskBtn">Add task</button>
-            <button>Delete all</button>
+            <button id="deleteAllBtn">Delete all</button>
         </div>
     </div>
     <div class="timer">

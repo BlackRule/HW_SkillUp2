@@ -7,71 +7,31 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Sign up</title>
+    <link rel="stylesheet" href="{% static "/css/reset.css" %}">
     <link rel="stylesheet" href="{% static "/css/forms.css" %}">
-    <script>
-    //Typedefs
-    /**
-    * @typedef {Object} SignUpResponse
-    * @property {string} email
-    * @property {string} username
-    * @property {number} id
-    */
-    </script>
-    <script defer>
-    "use strict";
-    function sendData(form) {
-        const data = new URLSearchParams();
-        for (const pair of new FormData(form)) {
-            data.append(pair[0], pair[1]);
-        }
-        fetch('/auth/users/', {
-            method: 'post',
-            body: data,
-        })
-            .then((response) => {
-                if(!response.ok){
-                    console.log(response)
-                     response.json().then(
-                        (data) => {
-                            console.log(data)
-                        });
-                } else {
-                    response.json().then(
-                        /** @param data {SignUpResponse}*/
-                        (data) => {
-                            location.replace("/signin")
-                        });
-                }
-            })
-            .catch((err) => {
-                console.log("ERROR: ");
-                console.log(err)
-            });
-    }
-
-    window.addEventListener("load", function () {
-        const form = document.getElementById("form");
-        form.addEventListener("submit",(e)=> {
-            e.preventDefault();
-            sendData(e.target);
-        });
-    });
-    </script>
+    <link rel="stylesheet" href="{% static "/css/signup.css" %}">
+    <script src="{% static "/js/common.js" %}" defer></script>
+    <script src="{% static "/js/signup.js" %}" defer></script>
 </head>
 <body>
 <form action="" id="form">
+    <h1>Signup</h1>
+    <p>Already have an account?<a href="/signin">Sign in instead</a></p>
     <label>
         username
         <input type="text" name="username">
     </label>
+        <span id="usernameerrors"></span>
     <label>
         email
         <input type="email" name="email">
     </label>
+        <span id="emailerrors"></span>
     <label>
         password
         <input type="password" name="password">
     </label>
+        <span id="passworderrors"></span>
     <input type="submit" value="signup">
 </form>
 </body>

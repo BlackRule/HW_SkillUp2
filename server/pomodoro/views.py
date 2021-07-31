@@ -36,7 +36,8 @@ class TodoSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(createdBy=self.request.user)
 
-    @action(detail=False, methods=["delete"])
-    def all(self, request, *args, **kwargs):
-        deleted, rowsCount = Todo.objects.all().delete()
+    @action(detail=False)
+    def delete_all(self, request, *args, **kwargs):
+        print(request.method)
+        deleted, rowsCount = Todo.objects.filter(createdBy=self.request.user).delete()
         return Response(data={"rowsCount": rowsCount})

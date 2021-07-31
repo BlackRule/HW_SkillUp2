@@ -8,6 +8,6 @@ class Todo(models.Model):
     #TODO why  created = models.DateTimeField(auto_now_add=True) doesnt work?!
     createdBy = models.ForeignKey(User,on_delete=models.CASCADE)
     text = models.TextField()
-
+    done = models.BooleanField()
     class Meta:
         ordering = ['created']
