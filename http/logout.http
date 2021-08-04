@@ -1,2 +1,4 @@
 POST http://pomodoro.com:8000/auth/token/logout/
 Authorization: Token {{auth_token}}
+
+> {% client.global.clear("auth_token"); %}

@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
+<audio preload="auto" id="audio" loop>
+  <source src="{% static 'sound/alert.mp3' %}" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
 <header class="header">
     <div class="header__logo">POMODORO Timer🍅</div>
     <a class="header__user">
@@ -38,11 +42,11 @@
         </div>
     </div>
     <div class="timer">
-        <div class="timer__currentPomodoro">work</div>
+        <div id="timer__currentPomodoro">Select task</div>
         <div id="timer__time">25:00</div>
         <div class="buttons">
-            <button>Start</button>
-            <button>Stop</button>
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
         </div>
         <div id="timer__options">
             <div></div>

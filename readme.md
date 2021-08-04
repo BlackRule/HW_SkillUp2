@@ -43,7 +43,8 @@ Deadline 24 июля
 Удалять выполненный цикл Pomodoro
 
 ----
-
+Bugs:
+Auth expires on server after some time
 --
 
 python -m httpie -a admin:admin http://pomodoro.com:8000/rest/todos/

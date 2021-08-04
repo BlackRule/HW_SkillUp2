@@ -26,32 +26,109 @@
  * @property {number} longBreak
  * @property {number} shortbreaksInARow
  */
+/** @typedef {"CURRENT_TASK_CHANGED","TIMER_TICK"} EventStr */
+/**
+ * TODO inherit from CustomEventInit & override  detail
+ * @typedef {{detail:{currentTaskId:number}}&EventInit} CURRENT_TASK_CHANGED_args
+ */
+/***@typedef {"TASK_NOT_SELECTED","STOPPED","WORK","SHORT_BREAK",
+ * "LONG_BREAK"} TimerState*/
 "use strict"
 let DEBUGstate = {}
 /**@type number*/
 DEBUGstate.lastTaskID = 1
-const state = {}
-state.auth_token = localStorage.getItem("auth_token") == null;
-if (state.auth_token) {
+/**
+ * @type {{
+ *     auth_token:string,
+ *     prevTaskId:number,
+ *     currentTaskId:number,
+ *     tasks: Task[],
+ *     timerActive:number,
+ *     timeLeft:number,
+ *     interval:number,
+ *     options:Options,
+ *     currentTimerState:TimerState,
+ *     timerShortBreaksDone:number
+ * }}
+ * */
+const state = {
+    prevTaskId: -1,
+    currentTaskId: -1,
+    tasks: /**@type Task[]*/[],
+    timerActive: false,
+    //in seconds
+    timeLeft: -1,
+    options:/**@type Options*/{},
+    currentTimerState:/**@type TimerState*/"TASK_NOT_SELECTED",
+    timerShortBreaksDone: 0
+}
+
+const SECS_IN_MINUTE = 5
+
+/**@type {Object.<TimerState, string>}*/
+const timerStateDesc = {
+    "TASK_NOT_SELECTED": "Select task",
+    "STOPPED": "Press start",
+    "WORK": "Work",
+    "SHORT_BREAK": "Short break",
+    "LONG_BREAK": "Long break",
+}
+
+function timerStateChanged() {
+    // (/**@type HTMLAudioElement*/$_("audio")).play()
+    $_("timer__currentPomodoro").innerHTML = timerStateDesc[state.currentTimerState]
+}
+
+if (localStorage.getItem("auth_token") == null) {
     location.replace("/signup")
 }
-/**@type number*/
-state.currentTaskId = -1
-/**@type [Task]*/
-state.tasks = []
 
-/**@param {
- * "markTaskCurrent",
- * "clickedCreateTask",
- * "taskCreated"
- * } action*/
+state.interval = setInterval(() => {
+    // /**@type EventStr*/
+    // const evt = "TIMER_TICK"
+    // document.dispatchEvent(new CustomEvent(evt))
+    if (state.timeLeft < 1) {
+        switch (state.currentTimerState) {
+            case "WORK":
+                if (state.timerShortBreaksDone < state.options.shortbreaksInARow) {
+                    state.currentTimerState = "SHORT_BREAK"
+                    state.timerShortBreaksDone++
+                    state.timeLeft = state.options.shortBreak * SECS_IN_MINUTE
+                } else {
+                    state.currentTimerState = "LONG_BREAK"
+                    state.timerShortBreaksDone = 0
+                    state.timeLeft = state.options.longBreak * SECS_IN_MINUTE
+                }
+                break
+            case "SHORT_BREAK":
+            case "LONG_BREAK":
+                state.currentTimerState = "WORK"
+                state.timeLeft = state.options.workTime * SECS_IN_MINUTE
+                break
+        }
+        timerStateChanged()
 
-/**
- * @param {{task: Task}} args
- */
-function currentTaskChanged(args) {
-    // state.currentTaskId=
-}
+        return
+    }
+    if (state.currentTimerState !== "STOPPED" && state.currentTimerState !== "TASK_NOT_SELECTED") {
+        state.timeLeft -= 1
+        const mf = Math.floor
+        $_("timer__time").innerHTML =
+            `${mf(state.timeLeft / SECS_IN_MINUTE)}${state.timeLeft % 2 === 0 ? ':' : ' '}${(new String(state.timeLeft % SECS_IN_MINUTE)).padStart(2, '0')}`
+    }
+}, 1000)
+
+$_("startBtn").addEventListener("click", () => {
+    if (state.currentTimerState !== "STOPPED") return
+    state.timeLeft = state.options.workTime * SECS_IN_MINUTE
+    state.currentTimerState = "WORK"
+    timerStateChanged()
+})
+$_("stopBtn").addEventListener("click", () => {
+    if (state.currentTimerState === "TASK_NOT_SELECTED") return
+    state.currentTimerState = "STOPPED"
+    timerStateChanged()
+})
 
 function createTaskHandler() {
     let text = prompt("Enter task text");
@@ -96,7 +173,9 @@ function taskCreated(args) {
     $_("todo__list").appendChild(createHTMLTask(args.task))
 }
 
-/** @returns [Task]*/
+/**
+ * Used for mocking server response
+ * @returns [Task]*/
 function getTasks() {
     /**@type [Task] */
     const taskList = [
@@ -135,15 +214,17 @@ function createHTMLTask(task) {
     const taskText = $_c("span")
     taskText.append(task.text)
     const deleteButton = $_c("span")
-    deleteButton.classList.add("far", "fa-trash-alt")
+    deleteButton.classList.add("far", "fa-trash-alt", "delete-button")
     deleteButton.dataset.deltaskid = task.id
     const taskCheckbox = $_c("input")
     taskCheckbox.type = "checkbox"
     taskCheckbox.checked = task.done
+    taskCheckbox.dataset.donetaskid = task.id
     su.appendChild(taskCheckbox)
     su.appendChild(taskText)
     su.appendChild(deleteButton)
     const de = $_c("details")
+    de.dataset.taskid = task.id
     const pomodoros = $_c("ul")
     for (const pomodoro of task.pomodoros) {
         const li = $_c("li")
@@ -152,6 +233,7 @@ function createHTMLTask(task) {
     }
     de.append(su)
     de.append(pomodoros)
+    de.id = `task${task.id}`
     return de
 }
 
@@ -161,29 +243,42 @@ function createHTMLTask(task) {
  * @param {Element} timer__options
  */
 function renderOptions(options, timer__options) {
-    function f(opts, type, parent) {
-        for (const o of opts) {
+    function f(elements, opts, type, parent) {
+        for (const o of elements) {
             const opt = $_c("label")
             opt.append(o[0])
             const inp = $_c("input")
             inp.type = type
             if (type === "checkbox") {
-                inp.checked = o[1]
+                inp.checked = opts[o[1]]
             } else {
-                inp.value = o[1]
+                inp.value = opts[o[1]]
+                inp.min = 0
+                inp.max = 99
+                inp.addEventListener("keydown", (e) => {
+                    if (e.key < e.target.min || e.key > e.target.max) {
+                        e.preventDefault()
+                        return false
+                    }
+                })
+                inp.addEventListener("change", (e) => {
+                    state.options[o[1]] = e.target.value
+                })
             }
             opt.append(inp)
             parent.append(opt)
+            let event = new Event('change');
+            inp.dispatchEvent(event);
         }
     }
 
-    f([["Sound", options.sound], ["Alert", options.alert]], "checkbox", timer__options.firstElementChild)
+    f([["Sound", "sound"], ["Alert", "alert"]], options, "checkbox", timer__options.firstElementChild)
     f([
-        ["Work time", options.workTime],
-        ["Short break", options.shortBreak],
-        ["Long break", options.longBreak],
-        ["Short breaks in a row", options.shortbreaksInARow],
-    ], "text", timer__options.lastElementChild)
+        ["Work time", "workTime"],
+        ["Short break", "shortBreak"],
+        ["Long break", "longBreak"],
+        ["Short breaks in a row", "shortbreaksInARow"],
+    ], options, "number", timer__options.lastElementChild)
 }
 
 window.addEventListener("load", function () {
@@ -205,11 +300,19 @@ window.addEventListener("load", function () {
     renderOptions({
         sound: true,
         alert: true,
+        workTime: 1,
+        shortBreak: 1,
+        longBreak: 1,
+        shortbreaksInARow: 2
+    }, $_("timer__options"))
+    /*renderOptions({
+        sound: true,
+        alert: true,
         workTime: 25,
         shortBreak: 5,
         longBreak: 15,
         shortbreaksInARow: 4
-    }, $_("timer__options"))
+    }, $_("timer__options"))*/
     $_("addTaskBtn").addEventListener("click", createTaskHandler)
 
     $_("logout_btn").addEventListener("click", (e) => {
@@ -267,12 +370,39 @@ window.addEventListener("load", function () {
     })
 
     $_("todo__list").addEventListener("click", (e) => {
-        const tid = e.target.dataset.deltaskid
-        console.log(tid)
-
-        if (tid) {
+        const dtid = e.target.dataset.deltaskid
+        if (dtid) {
             e.preventDefault()
-            fetch(`/rest/todos/${tid}`, {
+            fetch(`/rest/todos/${dtid}`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Token ${localStorage.getItem("auth_token")}`}
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        console.log(response)
+                        response.json().then(
+                            (d) => {
+                                console.log(d)
+                            });
+                    } else {
+                        e.target.parentElement.parentElement.parentElement.removeChild(
+                            e.target.parentElement.parentElement
+                        )
+                    }
+                })
+                .catch((err) => {
+                    console.log("ERROR: ");
+                    console.log(err)
+
+                });
+            e.stopPropagation()
+            return false
+        }
+
+        const dntid = e.target.dataset.taskid
+        /*if (dntid) {
+            e.preventDefault()
+            fetch(`/rest/todos/${dntid}`, {
             method: 'DELETE',
             headers: {'Authorization': `Token ${localStorage.getItem("auth_token")}`}
         })
@@ -284,9 +414,7 @@ window.addEventListener("load", function () {
                             console.log(d)
                         });
                 } else {
-                    e.target.parentElement.parentElement.parentElement.removeChild(
-                        e.target.parentElement.parentElement
-                    )
+                    e.target.checked = !e.target.checked
                 }
             })
             .catch((err) => {
@@ -294,9 +422,44 @@ window.addEventListener("load", function () {
                 console.log(err)
 
             });
+            e.stopPropagation()
             return false
-
+        }*/
+        //When clicked on text(span)
+        let t = e.target.parentElement.parentElement
+        let tidt = t.dataset.taskid
+        //When clicked on task itself
+        if (!tidt) {
+            t = e.target.parentElement
+            tidt = t.dataset.taskid
         }
-        /**/
+        const tid = 1 * (tidt)
+        if (tid) {
+            e.preventDefault()
+            t.open = true
+            state.currentTaskId = tid
+            if (state.prevTaskId !== -1) {
+                $_(`task${state.prevTaskId}`).classList.remove("active")
+                $_(`task${state.prevTaskId}`).open = false
+            }
+            state.prevTaskId = state.currentTaskId
+            t.classList.add("active")
+            /***@type EventStr*/
+            const evt = "CURRENT_TASK_CHANGED"
+            /***@type CURRENT_TASK_CHANGED_args*/
+            const a = {detail: {currentTaskId: tid}}
+            document.dispatchEvent(new CustomEvent(evt, a))
+            e.stopPropagation()
+            return false
+        }
+
     })
+
+    /**@type EventStr*/
+    const t = "CURRENT_TASK_CHANGED"
+    document.addEventListener(t, /**@param e {CURRENT_TASK_CHANGED_args} */(e) => {
+        state.currentTimerState = "STOPPED"
+        timerStateChanged()
+    }, false);
 })
+

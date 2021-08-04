@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-y8hsm#^iy%3p8ncq93$af*j5zdlt$g84xzug#@bw8gka34^8ls
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["pomodoro.com"]
+ALLOWED_HOSTS = ["pomodoro.com","127.0.0.1"]
 
 # Application definition
 
