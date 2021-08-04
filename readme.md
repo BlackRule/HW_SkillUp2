@@ -1,3 +1,9 @@
+pip3 install djangorestframework  
+pip3 install djoser  
+pip3 install django-livereload-server  
+1) start django  
+(optional) 2) python manage.py livereload  
+  
 Deadline 24 июля
 
 Задание для фронтенд:
@@ -48,7 +54,3 @@ Auth expires on server after some time
 --
 
 python -m httpie -a admin:admin http://pomodoro.com:8000/rest/todos/
-План:
-Сделать связь Todo<-User +
-Выбирать только те Todo которые от этого user'а  +
-Сделать UI
