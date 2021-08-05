@@ -63,7 +63,7 @@ const state = {
     timerShortBreaksDone: 0
 }
 
-const SECS_IN_MINUTE = 5
+const SECS_IN_MINUTE = 60
 
 /**@type {Object.<TimerState, string>}*/
 const timerStateDesc = {
@@ -300,19 +300,11 @@ window.addEventListener("load", function () {
     renderOptions({
         sound: true,
         alert: true,
-        workTime: 1,
-        shortBreak: 1,
-        longBreak: 1,
-        shortbreaksInARow: 2
-    }, $_("timer__options"))
-    /*renderOptions({
-        sound: true,
-        alert: true,
         workTime: 25,
         shortBreak: 5,
         longBreak: 15,
         shortbreaksInARow: 4
-    }, $_("timer__options"))*/
+    }, $_("timer__options"))
     $_("addTaskBtn").addEventListener("click", createTaskHandler)
 
     $_("logout_btn").addEventListener("click", (e) => {
